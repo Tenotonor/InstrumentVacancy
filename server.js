@@ -11,12 +11,10 @@ const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(bodyParser.json());
-//app.use(express.static('public')); // Serve static files from 'public' directory
 
 // Store instruments data
 let instruments = {};
 
-// Explicitly serve each file you need
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
@@ -35,14 +33,22 @@ io.on('connection', (socket) => {
     });
 });
 
+// Modified to handle data from C# client
 app.post('/log', (req, res) => {
-    const { instrumentName, userData } = req.body;
-    instruments[instrumentName] = userData;
+    const { instName, userName, ipAddr } = req.body; // Adjust these fields based on your actual C# client data
+    const key = instName; // Assuming instName is unique for each instrument/client
+
+    // Update or add the instrument data
+    instruments[key] = {
+        userName,
+        ipAddr,
+        lastUpdated: new Date().toISOString() // Adding a timestamp for the last update
+    };
 
     // Emit updated instruments data to all clients
     io.emit('update', instruments);
 
-    res.send('Data received successfully');
+    res.json({ message: 'Data received successfully', data: req.body });
 });
 
 server.listen(port, () => {
