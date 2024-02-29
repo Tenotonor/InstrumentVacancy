@@ -11,13 +11,18 @@ const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(bodyParser.json());
-app.use(express.static('public')); // Serve static files from 'public' directory
+//app.use(express.static('public')); // Serve static files from 'public' directory
 
 // Store instruments data
 let instruments = {};
 
+// Explicitly serve each file you need
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html');
+    res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/script.js', (req, res) => {
+    res.sendFile(__dirname + '/script.js');
 });
 
 io.on('connection', (socket) => {
