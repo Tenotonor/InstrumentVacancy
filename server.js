@@ -9,9 +9,6 @@ const io = socketIo(server); // Setup socket.io with the server
 
 const port = process.env.PORT || 3000;
 
-// Middleware to parse JSON bodies
-app.use(bodyParser.json());
-
 app.use((req, res, next) => {
     console.log(`Incoming request: ${req.method} ${req.url}`);
     next();
