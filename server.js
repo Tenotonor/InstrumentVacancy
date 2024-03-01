@@ -42,13 +42,14 @@ io.on('connection', (socket) => {
 });
 
 // Handle data from C# client
-app.post('/log', (req, res) => {
-    console.log('Received POST request to /log with data:', req.body);
+// Handle GET requests for /log
+app.get('/log', (req, res) => {
+    const { instName, userName, ipAddr } = req.query;
+    console.log('Received data:', req.query);
 
-    const { instName, userName, ipAddr } = req.body;
     if (!instName || !userName || !ipAddr) {
-        console.error('Missing data in request:', req.body);
-        return res.status(400).json({ error: 'Missing data in request' });
+        console.error('Missing data in query:', req.query);
+        return res.status(400).send('Missing data in request');
     }
 
     // Assuming instName is unique for each instrument/client
@@ -66,8 +67,9 @@ app.post('/log', (req, res) => {
     // Emit updated instruments data to all clients
     io.emit('update', instruments);
 
-    res.json({ message: 'Data received successfully', data: req.body });
+    res.send('Data received successfully');
 });
+
 
 // Start the server
 server.listen(port, () => {
