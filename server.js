@@ -1,74 +1,60 @@
 const express = require('express');
-const http = require('http');
-const bodyParser = require('body-parser');
-const socketIo = require('socket.io');
-
 const app = express();
-const server = http.createServer(app);
-const io = socketIo(server); // Setup socket.io with the server
+const port = process.env.PORT;
 
-const port = process.env.PORT || 3000;
+// Initialize instrument list and header string
+let inst_list = ["Updated Time, Instrument Name, User Name, Available IPs\n\n"];
+let decryptorVersion;
 
-app.use((req, res, next) => {
-    console.log(`Incoming request: ${req.method} ${req.url}`);
-    next();
+// Middleware for parsing request bodies
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// Endpoint to get the current decryptor version
+app.get("/SpringDecryptor", (req, res) => {
+  res.send(decryptorVersion || "No version set");
 });
-// Store instruments data
-let instruments = {};
 
-// Serve the main page
+// Endpoint to set the decryptor version
+app.get("/SpringDecryptorSet", (req, res) => {
+  decryptorVersion = req.query.version;
+  console.log("Current version is:", decryptorVersion);
+  res.send(`Version set to ${decryptorVersion}`);
+});
+
+// Main logging endpoint
 app.get('/', (req, res) => {
-    console.log('Serving index.html');
-    res.sendFile(__dirname + '/index.html');
-});
+    const dateTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }).replace(",","").replace(" ","");
+    const { inst, name, ipaddr, empty } = req.query;
 
-// Serve the JavaScript file
-app.get('/script.js', (req, res) => {
-    console.log('Serving script.js');
-    res.sendFile(__dirname + '/script.js');
-});
+    console.log("Received data:", req.query);
 
-io.on('connection', (socket) => {
-    console.log('A user connected');
-    // Emit current instruments data to just connected client
-    socket.emit('update', instruments);
-
-    socket.on('disconnect', () => {
-        console.log('User disconnected');
-    });
-});
-
-// Handle data from C# client
-// Handle GET requests for /log
-app.get('/log', (req, res) => {
-    const { instName, userName, ipAddr } = req.query;
-    console.log('Received data:', req.query);
-
-    if (!instName || !userName || !ipAddr) {
-        console.error('Missing data in query:', req.query);
-        return res.status(400).send('Missing data in request');
+    if (parseInt(empty) === 0) {
+        inst_list = ["Updated Time, Instrument Name, User Name, Available IPs\n\n"];
+    } else if (inst) {
+        const cmd = `${dateTime}, ${inst}, ${name}, ${ipaddr}\n\n`;
+        const index = inst_list.findIndex(entry => entry.includes(inst));
+        
+        if (index >= 0) {
+            inst_list[index] = cmd; // Update existing entry
+        } else {
+            inst_list.push(cmd); // Add new entry
+        }
+    } else {
+        console.log("Undefined or invalid request");
     }
 
-    // Assuming instName is unique for each instrument/client
-    const key = instName;
-
-    // Update or add the instrument data
-    instruments[key] = {
-        userName,
-        ipAddr,
-        lastUpdated: new Date().toISOString() // Adding a timestamp for the last update
-    };
-
-    console.log(`Updated instruments data: ${JSON.stringify(instruments)}`);
-
-    // Emit updated instruments data to all clients
-    io.emit('update', instruments);
-
-    res.send('Data received successfully');
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.write('<< Current UXM5G users >> \n\n\n' + inst_list.join(""));
+    res.end("\n\n<< END >>");
 });
 
+// Additional endpoints for specific functionalities (e.g., /uxm5g)
+app.get("/uxm5g", (req, res) => {
+    res.send("UXM5G service is running...");
+});
 
 // Start the server
-server.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });
