@@ -1,3 +1,5 @@
 "scripts": {
-  "start": "node app.js"
-}
+    "start":"node ./src/index.js",  // 이부분 추가
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./src ./src/index.js"
+  },
