@@ -26,9 +26,13 @@ io.on('connection', (socket) => {
 app.get('/log', (req, res) => {
     const { instName, userName, ipAddr } = req.query;
     console.log(`Received data: instName=${instName}, userName=${userName}, ipAddr=${ipAddr}`);
-    // Process and respond
+
+    // Emit to all connected clients
+    io.emit('update', { instName, userName, ipAddr });
+
     res.send('Data received successfully');
 });
+
 
 http.listen(port, () => {
     console.log(`Server running at http://localhost:${port}/`);
