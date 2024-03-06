@@ -1,37 +1,29 @@
-// Establish connection to the server using Socket.IO
 const socket = io();
 
-socket.on('disconnect', () => {
-    console.log('Disconnected from the server');
-});
-socket.on('connect', () => {
-    console.log('Connected to the server');
-});
-
-// Listen for 'update' events from the server
 socket.on('update', (data) => {
-    console.log('socket.on update Enter');
     console.log('Received data:', data);
 
-    // Assuming data structure is { instName, userName, ipAddr }
-    // Use default values if any field is missing
-    const instName = data.instName || 'Unknown';
-    const userName = data.userName || 'Unknown';
-    const ipAddr = data.ipAddr || 'Unknown';
-
-    // Reference to the HTML element where updates will be displayed
+    // Reference to the container where instrument data will be displayed
     const instrumentsDiv = document.getElementById('instruments');
 
-    // Clear any previous content
-    instrumentsDiv.innerHTML = '';
+    // Generate a unique ID or key for each instrument based on its name
+    const instrumentId = `instrument-${data.instName.replace(/\W+/g, '-').toLowerCase()}`;
+    let instrumentDiv = document.getElementById(instrumentId);
 
-    // Create a new div element to display the received data
-    const div = document.createElement('div');
-    div.className = 'instrument';
-    div.innerHTML = `Instrument Name: ${instName}, User Name: ${userName}, IP Address: ${ipAddr}`;
+    // Check if this instrument's div already exists
+    if (instrumentDiv) {
+        // If it exists, update its content
+        instrumentDiv.innerHTML = `Instrument Name: ${data.instName}, User Name: ${data.userName}, IP Address: ${data.ipAddr}`;
+    } else {
+        // If it doesn't exist, create a new div for this instrument
+        instrumentDiv = document.createElement('div');
+        instrumentDiv.id = instrumentId; // Set the ID for future reference
+        instrumentDiv.className = 'instrument';
+        instrumentDiv.innerHTML = `Instrument Name: ${data.instName}, User Name: ${data.userName}, IP Address: ${data.ipAddr}`;
 
-    // Append the new div to the instruments div
-    instrumentsDiv.appendChild(div);
+        // Append the new div to the instruments container
+        instrumentsDiv.appendChild(instrumentDiv);
+    }
 
-    console.log('socket.on update Leave');
+    console.log('socket.on LEAVE');
 });
