@@ -10,9 +10,7 @@ app.use(express.static('.'));
 // WebSocket connection
 io.on('connection', (socket) => {
     console.log('A user connected');
-    // Emit an initial message to this client
-    socket.emit('update', { instName: 'Initial', userName: 'TestUser', ipAddr: '127.0.0.1' });
-
+    
     socket.on('disconnect', () => {
         console.log('User disconnected');
     });
