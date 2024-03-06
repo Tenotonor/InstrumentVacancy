@@ -1,39 +1,36 @@
 const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
-const cors = require('cors');
-const io = require('socket.io')(http, {
-  cors: {
-    origin: "*", // Allows access from any origin
-    methods: ["GET", "POST"] // Allows only GET and POST requests
-  }
-});
-
+const io = require('socket.io')(http);
 const port = process.env.PORT || 8080;
 
-// Middleware to solve CORS issues when your client is on a different origin
-app.use(cors());
-
-// Serve static files from the root directory
+// Middleware
 app.use(express.static('.'));
 
-// WebSocket connection handling
+// Data storage for instruments
+let instrumentsData = {};
+
+// WebSocket connection
 io.on('connection', (socket) => {
     console.log('A user connected via Socket.IO');
+
+    // Send existing instruments data to the newly connected client
+    socket.emit('initialData', instrumentsData);
 
     socket.on('disconnect', () => {
         console.log('User disconnected');
     });
 });
 
-// Route for logging data and emitting updates to all connected clients
+// Log data route
 app.get('/log', (req, res) => {
     const { instName, userName, ipAddr } = req.query;
-    console.log(`Received data: instName=${instName}, userName=${userName}, ipAddr=${ipAddr}`);
 
-    // Emitting to all connected clients
+    // Update instruments data
+    instrumentsData[instName] = { instName, userName, ipAddr };
+
+    // Emit to all connected clients
     io.emit('update', { instName, userName, ipAddr });
-    console.log('io.emit update called successfully with:', { instName, userName, ipAddr });
 
     res.send('Data received successfully');
 });
