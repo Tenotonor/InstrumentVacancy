@@ -1,6 +1,12 @@
 // Establish connection to the server using Socket.IO
 const socket = io();
 
+console.log('Attempting to connect to the server via Socket.IO...');
+socket.on('connect', () => {
+  console.log('Successfully connected to the server via Socket.IO');
+});
+
+
 // Listen for 'update' events from the server
 socket.on('update', (data) => {
     console.log('socket.on update Enter');
