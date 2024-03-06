@@ -21,9 +21,6 @@ app.use(express.static('.'));
 io.on('connection', (socket) => {
     console.log('A user connected via Socket.IO');
 
-    // This can still be used to send an initial message to just the connected client
-    socket.emit('update', { instName: 'Initial', userName: 'TestUser', ipAddr: '127.0.0.1' });
-
     socket.on('disconnect', () => {
         console.log('User disconnected');
     });
