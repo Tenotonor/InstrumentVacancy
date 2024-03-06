@@ -15,12 +15,19 @@ app.get('/', (req, res) => {
 });
 
 // WebSocket connection
+//io.on('connection', (socket) => {
+//    console.log('A user connected');
+//    socket.on('disconnect', () => {
+//        console.log('User disconnected');
+//   });
+//});
+
 io.on('connection', (socket) => {
     console.log('A user connected');
-    socket.on('disconnect', () => {
-        console.log('User disconnected');
-    });
+    // Immediately emit an event to this client
+    socket.emit('update', { instName: 'Test', userName: 'TestUser', ipAddr: '127.0.0.1' });
 });
+
 
 // Log data route
 app.get('/log', (req, res) => {
