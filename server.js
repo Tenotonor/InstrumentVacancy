@@ -29,8 +29,10 @@ app.get('/log', (req, res) => {
 
     // Emit to all connected clients
     io.emit('update', { instName, userName, ipAddr });
+    console.log(`io.emit update called successfully`);
 
     res.send('Data received successfully');
+    console.log(`Data received successfully`);
 });
 
 
