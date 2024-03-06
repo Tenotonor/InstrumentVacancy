@@ -42,6 +42,20 @@ app.get('/log', (req, res) => {
     console.log(`Data received successfully`);
 });
 
+app.get('/events', function(req, res) {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+
+    // a function to send messages
+    const sendUpdate = (data) => {
+        res.write(`data: ${JSON.stringify(data)}\n\n`);
+    };
+
+    sendUpdate({ message: "Initial message" });
+
+    // You could call sendUpdate whenever there's new data to send to the client
+});
+
 
 http.listen(port, () => {
     console.log(`Server running at http://localhost:${port}/`);
