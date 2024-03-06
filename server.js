@@ -20,15 +20,25 @@ io.on('connection', (socket) => {
 
 // Log data route
 app.get('/log', (req, res) => {
-    const { instName, userName, ipAddr } = req.query;
+    // Destructure and default values to ensure no undefined fields
+    const { instName = 'N/A', userName = 'N/A', ipAddr = 'N/A' } = req.query;
+
     console.log(`Received data: instName=${instName}, userName=${userName}, ipAddr=${ipAddr}`);
 
+    // Construct the data object carefully, ensuring no undefined values
+    const dataToSend = {
+        instName,
+        userName,
+        ipAddr
+    };
+
     // Emit to all connected clients
-    io.emit('update', { instName, userName, ipAddr });
-    console.log('io.emit update called successfully');
+    io.emit('update', dataToSend);
+    console.log(`io.emit update called successfully with:`, dataToSend);
 
     res.send('Data received successfully');
 });
+
 
 http.listen(port, () => {
     console.log(`Server running at http://localhost:${port}/`);
