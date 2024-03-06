@@ -1,14 +1,12 @@
 const socket = io();
 
-socket.on('update', (instruments) => {
+socket.on('update', (data) => {
     const instrumentsDiv = document.getElementById('instruments');
-    instrumentsDiv.innerHTML = ''; // Clear current instruments
+    instrumentsDiv.innerHTML = ''; // Clear current content
 
-    Object.keys(instruments).forEach((instrumentName) => {
-        const userData = instruments[instrumentName];
-        const div = document.createElement('div');
-        div.className = 'instrument';
-        div.innerHTML = `<strong>${instrumentName}</strong>: ${JSON.stringify(userData)}`;
-        instrumentsDiv.appendChild(div);
-    });
+    const div = document.createElement('div');
+    div.className = 'instrument';
+    div.innerHTML = `Instrument Name: ${data.instName}, User Name: ${data.userName}, IP Address: ${data.ipAddr}`;
+    instrumentsDiv.appendChild(div);
 });
+
