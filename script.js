@@ -6,18 +6,22 @@ socket.on('update', (data) => {
     console.log('socket.on update Enter');
     console.log('Received data:', data);
 
+    // Assuming data structure is { instName, userName, ipAddr }
+    // Use default values if any field is missing
+    const instName = data.instName || 'Unknown';
+    const userName = data.userName || 'Unknown';
+    const ipAddr = data.ipAddr || 'Unknown';
+
     // Reference to the HTML element where updates will be displayed
     const instrumentsDiv = document.getElementById('instruments');
-    
+
     // Clear any previous content
     instrumentsDiv.innerHTML = '';
 
     // Create a new div element to display the received data
     const div = document.createElement('div');
-    div.className = 'instrument'; // Assign a class for potential styling
-
-    // Construct the inner HTML of the div with the received data
-    div.innerHTML = `Instrument Name: ${data.instName || 'N/A'}, User Name: ${data.userName || 'N/A'}, IP Address: ${data.ipAddr || 'N/A'}`;
+    div.className = 'instrument';
+    div.innerHTML = `Instrument Name: ${instName}, User Name: ${userName}, IP Address: ${ipAddr}`;
 
     // Append the new div to the instruments div
     instrumentsDiv.appendChild(div);
