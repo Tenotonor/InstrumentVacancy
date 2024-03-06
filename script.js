@@ -24,5 +24,6 @@ function updateInstrument(data) {
         instrumentsDiv.appendChild(instrumentDiv);
     }
 
-    instrumentDiv.innerHTML = `Instrument Name: ${data.instName}, User Name: ${data.userName}, IP Address: ${data.ipAddr}`;
+    instrumentDiv.innerHTML = `Instrument Name: ${data.instName}, User Name: ${data.userName}, IP Address: ${data.ipAddr}, Last Updated: ${data.lastUpdateTime}`;
 }
+
