@@ -25,7 +25,8 @@ io.on('connection', (socket) => {
 // Log data route
 app.get('/log', (req, res) => {
     const { instName, userName, ipAddr } = req.query;
-    const lastUpdateTime = new Date().toLocaleString(); // Get current time as a readable string
+    //const lastUpdateTime = new Date().toLocaleString(); // Get current time as a readable string
+    const lastUpdateTime = new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
 
     // Update instruments data with the last update time
     instrumentsData[instName] = { instName, userName, ipAddr, lastUpdateTime };
